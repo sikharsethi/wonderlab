@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useStore } from '@/store/useStore';
 import { sfx } from '@/lib/sound';
+import { fresh, see } from '@/lib/fresh';
 import type { Subject } from '@/content/types';
 
 type GP = { s: Subject; exit: () => void };
@@ -20,7 +21,7 @@ export function Result({ e, t, p, stars, again, exit }: { e: string; t: string; 
   return (
     <div className="gp glass res"><Confetti />
       <div className="big">{e}</div><h2>{t}</h2><p>{p}</p><p className="earn">+{stars} ⭐</p>
-      <div className="actions"><button className="btn" onClick={again}>Play again</button><button className="btn ghost" onClick={exit}>All games</button></div>
+      <div className="actions"><button className="btn" onClick={again}>Next round →</button><button className="btn ghost" onClick={exit}>All games</button></div>
     </div>
   );
 }
@@ -37,14 +38,14 @@ export function Shell({ title, chips, exit, children }: { title: string; chips: 
 /* 🃏 Memory Match: pair each emoji with its name */
 export function Memory({ s, exit }: GP) {
   const [round, setRound] = useState(0);
-  const cards = useMemo(() => sh(sh(s.facts).slice(0, 6).flatMap(f => [{ k: f.id, t: f.emoji, em: true }, { k: f.id, t: short(f.name), em: false }])), [s, round]);
+  const cards = useMemo(() => sh(fresh(`${s.id}:match`, s.facts, f => f.id, 6).flatMap(f => [{ k: f.id, t: f.emoji, em: true }, { k: f.id, t: short(f.name), em: false }])), [s, round]);
   const [up, setUp] = useState<number[]>([]); const [ok, setOk] = useState<string[]>([]); const [moves, setMoves] = useState(0);
   const tap = (i: number) => {
     if (up.length === 2 || up.includes(i) || ok.includes(cards[i].k)) return;
     const n = [...up, i]; setUp(n); sfx.flip();
     if (n.length === 2) {
       setMoves(m => m + 1);
-      if (cards[n[0]].k === cards[n[1]].k) { setOk(o => [...o, cards[i].k]); setUp([]); sfx.ok(); } else { sfx.no(); setTimeout(() => setUp([]), 800); }
+      if (cards[n[0]].k === cards[n[1]].k) { setOk(o => [...o, cards[i].k]); setUp([]); sfx.ok(); see([`${s.id}:match:${cards[i].k}`]); } else { sfx.no(); setTimeout(() => setUp([]), 800); }
     }
   };
   if (ok.length === cards.length / 2)
@@ -64,7 +65,7 @@ export function Memory({ s, exit }: GP) {
 /* 🔤 Word Scramble */
 export function Scramble({ s, exit }: GP) {
   const [seed, setSeed] = useState(0);
-  const words = useMemo(() => sh(s.facts.map(f => ({ f, w: short(f.name).replace(/[^A-Za-z]/g, '').toUpperCase() })).filter(x => x.w.length >= 4 && x.w.length <= 9)).slice(0, 5), [s, seed]);
+  const words = useMemo(() => fresh(`${s.id}:scr`, s.facts.map(f => ({ f, w: short(f.name).replace(/[^A-Za-z]/g, '').toUpperCase() })).filter(x => x.w.length >= 4 && x.w.length <= 9), x => x.f.id, 5), [s, seed]);
   const [n, setN] = useState(0); const [pick, setPick] = useState<number[]>([]); const [score, setScore] = useState(0); const [bad, setBad] = useState(false);
   const cur = words[n];
   const letters = useMemo(() => (cur ? sh(cur.w.split('')) : []), [cur]);
@@ -72,7 +73,7 @@ export function Scramble({ s, exit }: GP) {
     if (pick.includes(i) || pick.length >= cur.w.length) return;
     const p = [...pick, i]; setPick(p); sfx.tap();
     if (p.length === cur.w.length) {
-      if (p.map(j => letters[j]).join('') === cur.w) { sfx.ok(); setScore(x => x + 1); setTimeout(() => { setN(x => x + 1); setPick([]); }, 800); }
+      if (p.map(j => letters[j]).join('') === cur.w) { sfx.ok(); see([`${s.id}:scr:${cur.f.id}`]); setScore(x => x + 1); setTimeout(() => { setN(x => x + 1); setPick([]); }, 800); }
       else { sfx.no(); setBad(true); setTimeout(() => { setPick([]); setBad(false); }, 600); }
     }
   };
@@ -94,12 +95,13 @@ export function Rush({ s, exit }: GP) {
   const qs = useMemo(() => {
     const gen = s.facts.map(f => ({ q: `Who am I? ${f.text}`, a: f.name, options: sh([f.name, ...sh(s.facts.filter(x => x.id !== f.id)).slice(0, 2).map(x => x.name)]) }));
     const base = s.quiz.map(q => ({ q: q.q, a: q.options[q.answer], options: q.options }));
-    return sh([...base, ...gen]).slice(0, 8);
+    const pic = s.facts.map(f => ({ q: `Which one is the ${short(f.name)}?`, a: f.emoji, options: sh([f.emoji, ...sh(s.facts.filter(x => x.id !== f.id)).slice(0, 2).map(x => x.emoji)]) }));
+    return fresh(`${s.id}:rush`, [...base, ...gen, ...pic], x => x.q, 8);
   }, [s, seed]);
   const [i, setI] = useState(0); const [lives, setLives] = useState(3); const [streak, setStreak] = useState(0); const [score, setScore] = useState(0); const [pick, setPick] = useState<string | null>(null);
   const q = qs[i];
   const answer = (o: string) => {
-    if (pick) return; setPick(o);
+    if (pick) return; setPick(o); see([`${s.id}:rush:${q.q}`]);
     if (o === q.a) { sfx.ok(); setStreak(x => x + 1); setScore(x => x + 1 + (streak >= 2 ? 1 : 0)); } else { sfx.no(); setLives(l => l - 1); setStreak(0); }
     setTimeout(() => { setPick(null); setI(x => x + 1); }, 900);
   };

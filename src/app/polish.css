@@ -1,0 +1,27 @@
+/* Polish pass: fixes from the screenshot review */
+/* 1. Sound button must float (liquid.css had made it position:relative) */
+.snd.glass{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:30}
+/* 2. Centered, balanced card rows (no lonely last card) */
+.grid{display:flex;flex-wrap:wrap;justify-content:center;gap:20px}.grid .tile{flex:1 1 300px;max-width:380px}
+.menu{display:flex;flex-wrap:wrap;justify-content:center;gap:14px}.menu .gcard{flex:1 1 250px;max-width:300px}
+.home h1{text-wrap:balance}
+/* 3. Game cards: deeper tint for readable white text */
+.menu .gcard{background:linear-gradient(160deg,color-mix(in srgb,var(--c) 100%,#fff 8%),color-mix(in srgb,var(--c) 68%,#000))!important;text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.menu .gcard small{opacity:1;font-weight:500}
+/* 4. Clear-glass buttons need a visible edge on white cards */
+.btn.ghost,.gp .opts button:not(.ok):not(.no),.lvls button:not(.on),.pgtop .back{
+  background:linear-gradient(160deg,#fff,color-mix(in srgb,var(--c,#7c3aed) 16%,#fff))!important;
+  border:1px solid color-mix(in srgb,var(--c,#7c3aed) 38%,transparent)!important;color:var(--ink)}
+@media(prefers-color-scheme:dark){.btn.ghost,.gp .opts button:not(.ok):not(.no),.lvls button:not(.on),.pgtop .back{
+  background:linear-gradient(160deg,rgba(255,255,255,.22),color-mix(in srgb,var(--c,#7c3aed) 30%,transparent))!important}}
+/* 5. Header pill spacing + level selector */
+.pill{display:inline-flex;align-items:center;gap:10px}
+.lvls .lbl{align-self:center;color:var(--muted);margin-right:4px}
+.lvls button.on{background:linear-gradient(160deg,color-mix(in srgb,var(--c) 100%,#fff 8%),color-mix(in srgb,var(--c) 70%,#000))!important;color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+/* 6. Colored glows behind lesson pages so the glass has something to blur */
+.pg{position:relative}
+.pg::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(520px 420px at 8% 0%,color-mix(in srgb,var(--c) 30%,transparent),transparent 70%),radial-gradient(560px 460px at 100% 100%,color-mix(in srgb,var(--c) 24%,transparent),transparent 70%)}
+.fcard.glass{background:linear-gradient(160deg,var(--card),color-mix(in srgb,var(--c) 14%,var(--card)))}
+/* 7. Phone: tidy streak bar */
+@media(max-width:520px){.streak{display:grid;grid-template-columns:1fr 1fr;text-align:center}.streak .go{grid-column:1/-1}}

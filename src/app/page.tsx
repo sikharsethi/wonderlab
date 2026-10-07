@@ -10,7 +10,7 @@ export default function Home() {
       <i className="orb" style={{ background: '#0ea5e9', bottom: -140, left: '30%', width: 460, height: 460, animationDelay: '-9s' }} />
       <main className="home">
         <span className="badge">🎮 Learning games for ages 5–12</span>
-        <h1>Learn, play and grow<br />with <em>WonderLab</em></h1>
+        <h1>Learn, play and grow with <em>WonderLab</em></h1>
         <p className="lead">Match cards, unscramble words, pop balloons and race through quizzes. Every game earns stars!</p>
         <div className="perks">{PERKS.map(p => <span key={p}>{p}</span>)}</div>
         <StreakBar />

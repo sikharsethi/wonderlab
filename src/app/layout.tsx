@@ -1,5 +1,7 @@
 import './globals.css';
 import './games.css';
+import './liquid.css';
+import './polish.css';
 import SoundToggle from '@/components/SoundToggle';
 import type { Metadata, Viewport } from 'next';
 import { Fredoka } from 'next/font/google';

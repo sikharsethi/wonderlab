@@ -1,0 +1,26 @@
+/* 💧 Liquid-glass buttons: translucent, blurred, glossy highlight + inner glow */
+:root{--gl1:rgba(255,255,255,.62);--gl2:rgba(255,255,255,.14)}
+@media(prefers-color-scheme:dark){:root{--gl1:rgba(255,255,255,.26);--gl2:rgba(255,255,255,.05)}}
+.glass{border-color:rgba(255,255,255,.55);box-shadow:var(--shadow),inset 0 2px 3px rgba(255,255,255,.55),inset 0 -8px 16px rgba(255,255,255,.07)}
+:is(.btn,.gcard,.lt,.dg,.bl,.mc,.tfb button,button.primary,.pill,.lvls button,.back,.snd,.opts button){
+  position:relative;overflow:hidden;isolation:isolate;border:1px solid rgba(255,255,255,.6)!important;
+  backdrop-filter:blur(10px) saturate(1.8);-webkit-backdrop-filter:blur(10px) saturate(1.8);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.8),inset 0 -8px 14px rgba(255,255,255,.14),inset 0 -2px 5px color-mix(in srgb,var(--t,var(--c,#7c3aed)) 65%,#000),0 10px 22px color-mix(in srgb,var(--t,var(--c,#7c3aed)) 32%,transparent);
+  transition:transform .25s cubic-bezier(.3,1.7,.5,1),filter .2s}
+:is(.btn,.gcard,.lt,.dg,.bl,.mc,.tfb button,button.primary,.pill,.lvls button,.back,.snd,.opts button)::before{
+  content:"";position:absolute;inset:1px 7px auto 7px;height:48%;border-radius:inherit;z-index:-1;pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,.7),rgba(255,255,255,0))}
+:is(.btn,.gcard,.lt,.dg,.bl,.mc,.tfb button,button.primary,.pill,.lvls .on){
+  background:linear-gradient(160deg,color-mix(in srgb,var(--t,var(--c,#7c3aed)) 82%,rgba(255,255,255,.4)),color-mix(in srgb,var(--t,var(--c,#7c3aed)) 50%,transparent))!important;
+  color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+:is(.btn.ghost,.opts button,.back,.snd,.lvls button,.mc.up){
+  background:linear-gradient(160deg,var(--gl1),var(--gl2))!important;color:var(--ink);text-shadow:none;--t:#94a3b8}
+.lvls .on{--t:var(--c);color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.opts .ok,.mc.ok{--t:#22c55e;background:linear-gradient(160deg,#bbf7d0,#22c55e99)!important;color:#14532d;text-shadow:none}
+.opts .no{--t:#ef4444;background:linear-gradient(160deg,#fecaca,#ef444499)!important;color:#7f1d1d;text-shadow:none}
+.tfb .t{--t:#22c55e}.tfb .f{--t:#ef4444}.tfb button{backdrop-filter:blur(10px)}
+:is(.btn,.gcard,.lt,.tfb button,.opts button,.back,.snd,.lvls button):hover{transform:translateY(-3px) scale(1.03);filter:brightness(1.08)}
+:is(.btn,.gcard,.lt,.tfb button,.opts button,.back,.snd,.lvls button):active{transform:scale(.95)}
+:is(.btn,.opts button):disabled{filter:none}
+.lvls{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0}.lvls button{border-radius:99px;padding:9px 18px;font-weight:600;cursor:pointer}
+.opts button{border-radius:16px}.gcard,.pill{border-radius:24px}.pill{border-radius:99px}

@@ -7,6 +7,7 @@ import { Memory, Scramble, Rush, Blast } from './Games';
 import { TrueFalse, Sort } from './Games2';
 import { SORTS } from '@/content/sorts';
 import { sfx } from '@/lib/sound';
+import { pool } from '@/lib/fresh';
 
 const GAMES = {
   match: { n: 'Memory Match', e: '🃏', d: 'Flip cards and find the pairs' },
@@ -17,27 +18,30 @@ const GAMES = {
   sort: { n: 'Sort It!', e: '🧺', d: 'Drag items into the right basket' },
 };
 type K = keyof typeof GAMES;
+const COLORS: Record<K, string> = { match: '#f97316', scramble: '#0ea5e9', rush: '#8b5cf6', tf: '#ec4899', sort: '#14b8a6', blast: '#ef4444' };
 const RUN = { match: Memory, scramble: Scramble, rush: Rush, blast: Blast, tf: TrueFalse, sort: Sort };
 
 export default function Learner({ s }: { s: Subject }) {
   const { found, stars, discover, streak, checkin } = useStore();
   const [ready, setReady] = useState(false); useEffect(() => { checkin(); setReady(true); }, [checkin]);
-  const [g, setG] = useState<K | null>(null); const [open, setOpen] = useState<string | null>(null);
+  const [lv, setLv] = useState(1); const [g, setG] = useState<K | null>(null); const [open, setOpen] = useState<string | null>(null);
   const list: K[] = ['match', 'scramble', 'rush', 'tf', ...(SORTS[s.id] ? (['sort'] as K[]) : []), ...(s.id === 'math' ? (['blast'] as K[]) : [])];
   const done = ready ? s.facts.filter(f => found.includes(f.id)).length : 0;
   const speak = (t: string) => { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.rate = .9; speechSynthesis.speak(u); };
   const Game = g ? RUN[g] : null;
+  const leveled = s.facts.some(f => (f.lv ?? 1) > 1); const view = { ...s, facts: pool(s, lv) };
 
   return (
     <div className="pg" style={{ '--c': s.color } as CSSProperties}>
-      <header className="pgtop glass"><Link href="/" className="back" aria-label="Home">←</Link><b>{s.emoji} {s.name}</b><Link href="/stickers" className="pill">🔥 {ready ? streak : 0} · ⭐ {ready ? stars : 0}</Link></header>
-      {Game ? <Game s={s} exit={() => setG(null)} /> : (
+      <header className="pgtop glass"><Link href="/" className="back" aria-label="Home">←</Link><b>{s.emoji} {s.name}</b><Link href="/stickers" className="pill"><span>🔥 {ready ? streak : 0}</span><span>⭐ {ready ? stars : 0}</span></Link></header>
+      {Game ? <Game s={view} exit={() => setG(null)} /> : (
         <>
           <div className="hello glass"><span className="avatar">🦉</span>
             <div><b>Hi, explorer!</b><div className="muted">Play a game, or tap a card below to discover facts. Every game earns stars!</div></div></div>
+          {leveled && <div className="lvls"><b className="lbl">Level:</b>{['🌱 Easy', '🌿 Medium', '🌳 Hard'].map((n, i) => <button key={n} className={lv === i + 1 ? 'on' : ''} onClick={() => { sfx.tap(); setLv(i + 1); }}>{n}</button>)}</div>}
           <h2 className="sec">🎮 Games</h2>
           <div className="menu">{list.map(k => (
-            <button key={k} className="gcard" onClick={() => { sfx.tap(); setG(k); }}><span>{GAMES[k].e}</span><b>{GAMES[k].n}</b><small>{GAMES[k].d}</small></button>))}</div>
+            <button key={k} className="gcard" style={{ '--c': COLORS[k] } as CSSProperties} onClick={() => { sfx.tap(); setG(k); }}><span>{GAMES[k].e}</span><b>{GAMES[k].n}</b><small>{GAMES[k].d}</small></button>))}</div>
           <h2 className="sec">🔎 Discover · {done}/{s.facts.length}</h2>
           <div className="bar"><i style={{ width: `${(done / s.facts.length) * 100}%` }} /></div>
           <div className="fgrid">{s.facts.map(f => (
