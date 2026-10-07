@@ -1,10 +1,11 @@
 'use client';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useStore } from '@/store/useStore';
+import { sfx } from '@/lib/sound';
 import type { Subject } from '@/content/types';
 
 type GP = { s: Subject; exit: () => void };
-const sh = <T,>(a: T[]) => [...a].sort(() => Math.random() - 0.5);
+export const sh = <T,>(a: T[]) => [...a].sort(() => Math.random() - 0.5);
 const give = (n: number) => { for (let i = 0; i < n; i++) useStore.getState().award(); };
 const COL = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#0ea5e9', '#8b5cf6', '#ec4899'];
 const short = (n: string) => n.split(' (')[0];
@@ -13,9 +14,9 @@ function Confetti() {
   const bits = useMemo(() => Array.from({ length: 44 }, () => ({ l: Math.random() * 100, d: Math.random(), c: COL[Math.floor(Math.random() * 7)] })), []);
   return <div className="cf">{bits.map((b, i) => <i key={i} style={{ left: `${b.l}%`, background: b.c, animationDelay: `${b.d}s` }} />)}</div>;
 }
-function Result({ e, t, p, stars, again, exit }: { e: string; t: string; p: string; stars: number; again: () => void; exit: () => void }) {
+export function Result({ e, t, p, stars, again, exit }: { e: string; t: string; p: string; stars: number; again: () => void; exit: () => void }) {
   const once = useRef(false);
-  useEffect(() => { if (!once.current) { once.current = true; give(stars); } }, [stars]);
+  useEffect(() => { if (!once.current) { once.current = true; give(stars); sfx.win(); } }, [stars]);
   return (
     <div className="gp glass res"><Confetti />
       <div className="big">{e}</div><h2>{t}</h2><p>{p}</p><p className="earn">+{stars} ⭐</p>
@@ -23,7 +24,7 @@ function Result({ e, t, p, stars, again, exit }: { e: string; t: string; p: stri
     </div>
   );
 }
-function Shell({ title, chips, exit, children }: { title: string; chips: string[]; exit: () => void; children: ReactNode }) {
+export function Shell({ title, chips, exit, children }: { title: string; chips: string[]; exit: () => void; children: ReactNode }) {
   return (
     <div className="gp glass">
       <div className="ghead"><button className="btn ghost" onClick={exit}>← Games</button><b>{title}</b>
@@ -40,10 +41,10 @@ export function Memory({ s, exit }: GP) {
   const [up, setUp] = useState<number[]>([]); const [ok, setOk] = useState<string[]>([]); const [moves, setMoves] = useState(0);
   const tap = (i: number) => {
     if (up.length === 2 || up.includes(i) || ok.includes(cards[i].k)) return;
-    const n = [...up, i]; setUp(n);
+    const n = [...up, i]; setUp(n); sfx.flip();
     if (n.length === 2) {
       setMoves(m => m + 1);
-      if (cards[n[0]].k === cards[n[1]].k) { setOk(o => [...o, cards[i].k]); setUp([]); } else setTimeout(() => setUp([]), 800);
+      if (cards[n[0]].k === cards[n[1]].k) { setOk(o => [...o, cards[i].k]); setUp([]); sfx.ok(); } else { sfx.no(); setTimeout(() => setUp([]), 800); }
     }
   };
   if (ok.length === cards.length / 2)
@@ -69,10 +70,10 @@ export function Scramble({ s, exit }: GP) {
   const letters = useMemo(() => (cur ? sh(cur.w.split('')) : []), [cur]);
   const tap = (i: number) => {
     if (pick.includes(i) || pick.length >= cur.w.length) return;
-    const p = [...pick, i]; setPick(p);
+    const p = [...pick, i]; setPick(p); sfx.tap();
     if (p.length === cur.w.length) {
-      if (p.map(j => letters[j]).join('') === cur.w) { setScore(x => x + 1); setTimeout(() => { setN(x => x + 1); setPick([]); }, 800); }
-      else { setBad(true); setTimeout(() => { setPick([]); setBad(false); }, 600); }
+      if (p.map(j => letters[j]).join('') === cur.w) { sfx.ok(); setScore(x => x + 1); setTimeout(() => { setN(x => x + 1); setPick([]); }, 800); }
+      else { sfx.no(); setBad(true); setTimeout(() => { setPick([]); setBad(false); }, 600); }
     }
   };
   if (!cur) return <Result e="🔤" t="Word wizard!" p={`You solved ${score} of ${words.length}`} stars={Math.max(1, Math.ceil((score * 3) / Math.max(1, words.length)))}
@@ -99,7 +100,7 @@ export function Rush({ s, exit }: GP) {
   const q = qs[i];
   const answer = (o: string) => {
     if (pick) return; setPick(o);
-    if (o === q.a) { setStreak(x => x + 1); setScore(x => x + 1 + (streak >= 2 ? 1 : 0)); } else { setLives(l => l - 1); setStreak(0); }
+    if (o === q.a) { sfx.ok(); setStreak(x => x + 1); setScore(x => x + 1 + (streak >= 2 ? 1 : 0)); } else { sfx.no(); setLives(l => l - 1); setStreak(0); }
     setTimeout(() => { setPick(null); setI(x => x + 1); }, 900);
   };
   if (!q || lives <= 0) return <Result e={lives > 0 ? '🚀' : '💪'} t={lives > 0 ? 'Quiz complete!' : 'Good try!'} p={`Score: ${score}`} stars={Math.min(5, Math.max(1, Math.ceil(score / 2)))}
@@ -124,10 +125,10 @@ export function Blast({ exit }: GP) {
     return { q: `${a} ${mul ? '×' : '+'} ${b}`, ans, opts: sh(Array.from(set)) };
   };
   const [q, setQ] = useState(() => mk());
-  useEffect(() => { if (t <= 0) return; const id = setTimeout(() => setT(x => x - 1), 1000); return () => clearTimeout(id); }, [t]);
+  useEffect(() => { if (t <= 0) return; const id = setTimeout(() => { if (t <= 6) sfx.tick(); setT(x => x - 1); }, 1000); return () => clearTimeout(id); }, [t]);
   if (t <= 0) return <Result e="🎈" t="Time's up!" p={`You popped ${score} balloons`} stars={Math.min(5, Math.max(1, Math.ceil(score / 4)))}
     again={() => { setT(30); setScore(0); setOops(0); setQ(mk()); }} exit={exit} />;
-  const tap = (o: number) => { if (o === q.ans) { setScore(x => x + 1); setQ(mk(score)); } else setOops(x => x + 1); };
+  const tap = (o: number) => { if (o === q.ans) { sfx.pop(); setScore(x => x + 1); setQ(mk(score)); } else { sfx.no(); setOops(x => x + 1); } };
   return (
     <Shell title="🎈 Math Blast" chips={[`⏱️ ${t}s`, `🎈 ${score}`]} exit={exit}>
       <h3 className="q big2">{q.q} = ?</h3>

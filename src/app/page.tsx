@@ -1,6 +1,7 @@
 import { ALL } from '@/content/all';
 import Tile from '@/components/Tile';
-const PERKS = ['🎮 4 fun games', '🔊 Read-aloud facts', '⭐ Stars & badges', '📱 Works on phones'];
+import { StreakBar } from '@/components/Rewards';
+const PERKS = ['🎮 6 fun games', '🔊 Read-aloud facts', '🎟️ Stickers & streaks', '📱 Works on phones'];
 export default function Home() {
   return (
     <div className="home-wrap">
@@ -12,6 +13,7 @@ export default function Home() {
         <h1>Learn, play and grow<br />with <em>WonderLab</em></h1>
         <p className="lead">Match cards, unscramble words, pop balloons and race through quizzes. Every game earns stars!</p>
         <div className="perks">{PERKS.map(p => <span key={p}>{p}</span>)}</div>
+        <StreakBar />
         <div className="grid">{ALL.map(s => <Tile key={s.id} s={s} />)}</div>
       </main>
     </div>
