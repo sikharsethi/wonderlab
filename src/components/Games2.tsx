@@ -2,9 +2,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Subject } from '@/content/types';
 import { SORTS } from '@/content/sorts';
-import { Result, Shell, sh } from './Games';
+import { Result, Shell, sh, bump, type Rv } from './Games';
 import { sfx } from '@/lib/sound';
-import { fresh, see } from '@/lib/fresh';
+import { fresh, see, unsee } from '@/lib/fresh';
 
 type GP = { s: Subject; exit: () => void };
 
@@ -16,13 +16,13 @@ export function TrueFalse({ s, exit }: GP) {
     const f = deck[idx.current++ % deck.length], truth = Math.random() < 0.5;
     return { f, truth, text: truth ? f.text : sh(s.facts.filter(x => x.id !== f.id))[0].text };
   };
-  const [t, setT] = useState(30); const [score, setScore] = useState(0); const [miss, setMiss] = useState(0);
+  const [t, setT] = useState(30); const [score, setScore] = useState(0); const [miss, setMiss] = useState(0); const [missed, setMissed] = useState<Rv[]>([]);
   const [q, setQ] = useState(mk); const [flash, setFlash] = useState('');
   useEffect(() => { if (t <= 0) return; const id = setTimeout(() => { if (t <= 6) sfx.tick(); setT(x => x - 1); }, 1000); return () => clearTimeout(id); }, [t]);
-  if (t <= 0) return <Result e="⚡" t="Time's up!" p={`${score} right, ${miss} wrong`} stars={Math.min(5, Math.max(1, Math.ceil(score / 3)))}
-    again={() => { setSeed(x => x + 1); idx.current = 0; setT(30); setScore(0); setMiss(0); setQ(mk()); }} exit={exit} />;
+  if (t <= 0) return <Result e="⚡" t="Time's up!" p={`${score} right, ${miss} wrong`} stars={Math.min(5, Math.max(1, Math.ceil(score / 3)))} review={missed}
+    again={() => { setSeed(x => x + 1); idx.current = 0; setT(30); setScore(0); setMiss(0); setMissed([]); setQ(mk()); }} exit={exit} />;
   const ans = (v: boolean) => {
-    const ok = v === q.truth; if (ok) sfx.ok(); else sfx.no(); see([`${s.id}:tf:${q.f.id}`]); if (ok) setScore(x => x + 1); else setMiss(x => x + 1);
+    const ok = v === q.truth; if (ok) sfx.ok(); else sfx.no(); see([`${s.id}:tf:${q.f.id}`]); if (ok) setScore(x => x + 1); else { setMiss(x => x + 1); unsee([`${s.id}:tf:${q.f.id}`]); setMissed(m => bump(m, { e: q.f.emoji, t: q.f.name, p: q.f.text })); }
     setFlash(ok ? 'ok' : 'no'); setTimeout(() => setFlash(''), 300); setQ(mk());
   };
   return (
@@ -38,14 +38,14 @@ export function TrueFalse({ s, exit }: GP) {
 export function Sort({ s, exit }: GP) {
   const set = SORTS[s.id]; const [seed, setSeed] = useState(0);
   const items = useMemo(() => sh([...fresh(`${s.id}:sort:a`, set.a.items, t => t, 3).map(t => ({ t, b: 'a' })), ...fresh(`${s.id}:sort:b`, set.b.items, t => t, 3).map(t => ({ t, b: 'b' }))]), [set, seed]);
-  const [done, setDone] = useState<number[]>([]); const [miss, setMiss] = useState(0); const [bad, setBad] = useState(-1);
+  const [done, setDone] = useState<number[]>([]); const [miss, setMiss] = useState(0); const [bad, setBad] = useState(-1); const [missed, setMissed] = useState<Rv[]>([]);
   const [d, setD] = useState<{ i: number; sx: number; sy: number; x: number; y: number } | null>(null);
   const drop = (i: number, b?: string) => {
     if (!b) return;
-    if (items[i].b === b) { sfx.ok(); see([`${s.id}:sort:${b}:${items[i].t}`]); setDone(x => [...x, i]); } else { sfx.no(); setMiss(m => m + 1); setBad(i); setTimeout(() => setBad(-1), 500); }
+    if (items[i].b === b) { sfx.ok(); if (!missed.some(x => x.t === items[i].t)) see([`${s.id}:sort:${b}:${items[i].t}`]); setDone(x => [...x, i]); } else { sfx.no(); unsee([`${s.id}:sort:${items[i].b}:${items[i].t}`]); setMissed(m => bump(m, { e: set[items[i].b as 'a' | 'b'].e, t: items[i].t, p: `Belongs in "${set[items[i].b as 'a' | 'b'].name}"` })); setMiss(m => m + 1); setBad(i); setTimeout(() => setBad(-1), 500); }
   };
-  if (done.length === items.length) return <Result e="🧺" t="All sorted!" p={miss ? `${miss} mix-ups along the way` : 'Perfect, no mistakes!'} stars={miss === 0 ? 4 : miss < 3 ? 3 : 2}
-    again={() => { setSeed(x => x + 1); setDone([]); setMiss(0); }} exit={exit} />;
+  if (done.length === items.length) return <Result e="🧺" t="All sorted!" p={miss ? `${miss} mix-ups along the way` : 'Perfect, no mistakes!'} stars={miss === 0 ? 4 : miss < 3 ? 3 : 2} review={missed}
+    again={() => { setSeed(x => x + 1); setDone([]); setMiss(0); setMissed([]); }} exit={exit} />;
   return (
     <Shell title="🧺 Sort It!" chips={[`Sorted ${done.length}/${items.length}`, `Oops ${miss}`]} exit={exit}>
       <p className="hint">Drag each item into the right basket!</p>

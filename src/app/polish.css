@@ -40,3 +40,14 @@
 .ul-card p{margin:4px 0;color:var(--muted)}.ul-more{font-weight:600;color:var(--c)!important}
 .ul-card .actions{justify-content:center;margin-top:14px}.ul-card .btn{display:inline-block;text-decoration:none}
 .sticker:not(.lock){cursor:pointer;transition:transform .2s}.sticker:not(.lock):hover{transform:translateY(-4px) scale(1.04)}
+/* 📚 Learn-from-mistakes review on results screens */
+.review{text-align:left;margin:14px auto 6px;max-width:520px}.review h3{margin:0 0 2px;text-align:center}
+.rv{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:16px;background:var(--chip);margin-top:8px}
+.rve{font-size:34px}.rv div{flex:1;display:flex;flex-direction:column;gap:2px}.rv span:not(.rve){color:var(--muted);font-size:.9rem}
+.rv .btn{padding:6px 10px}.perfect{font-weight:600;color:#16a34a;margin:6px 0}
+/* Results polish: cheer line + "missed N×" badge */
+.cheer{font-size:1.3rem;font-weight:700;margin:2px 0 8px;color:var(--c)}
+.x2{font-style:normal;background:#fde68a;color:#78350f;border-radius:99px;padding:1px 9px;font-size:.78rem;font-weight:700;margin-left:8px;vertical-align:middle}
+/* Unlock popup: bright card instead of gray (the dark overlay was showing through the glass) */
+.ul-card{background:linear-gradient(160deg,#ffffff,#f3e8ff)!important;color:#1b1f3b}
+@media(prefers-color-scheme:dark){.ul-card{background:linear-gradient(160deg,#2f2470,#1b1546)!important;color:#f3f4ff}}

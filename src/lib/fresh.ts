@@ -12,3 +12,5 @@ export const see = (keys: string[]) => useStore.getState().see(keys);
 
 /** Facts available at a level (1 easy, 2 medium, 3 hard). Subjects without levels use every fact. */
 export const pool = (s: Subject, lv: number) => { const p = s.facts.filter(f => (f.lv ?? 1) <= lv); return p.length >= 4 ? p : s.facts; };
+/** Forget items so they come back first next round (used for mistakes). */
+export const unsee = (keys: string[]) => useStore.getState().unsee(keys);
