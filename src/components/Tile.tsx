@@ -10,12 +10,13 @@ export default function Tile({ s }: { s: Subject }) {
   const n = m ? s.facts.filter(f => found.includes(f.id)).length : 0;
   const all = n === s.facts.length;
   return (
-    <Link href={`/learn/${s.id}`} className="tile glass" style={{ '--c': s.color } as CSSProperties}>
+    <Link href={`/learn/${s.id}`} className="tile glass" style={{ '--c': s.color } as CSSProperties} aria-label={`Play ${s.name}`}>
       <span className="emo">{s.emoji}</span>
       <h3>{s.name}</h3>
       <p>{s.intro}</p>
       <div className="bar"><i style={{ width: `${(n / s.facts.length) * 100}%` }} /></div>
-      <small>{all ? '🏅 Badge earned!' : `${n}/${s.facts.length} discovered`}<b>{all ? 'Replay' : 'Start'} →</b></small>
+      <small>{all ? '🏅 Badge earned!' : `${n}/${s.facts.length} discovered`}</small>
+      <span className="cta"><i>▶</i> {all ? 'Play Again' : 'Play Now'}</span>
     </Link>
   );
 }

@@ -18,10 +18,14 @@ const useBook = () => {
 
 export function StreakBar() {
   const { st, streak, ok } = useBook();
+  const got = STICKERS.filter(ok).length; const next = STICKERS.find(x => !ok(x));
   return (
-    <Link href="/stickers" className="streak glass">
-      <span>🔥 <b>{streak}</b>-day streak</span><span>⭐ <b>{st}</b> stars</span>
-      <span>🎟️ <b>{STICKERS.filter(ok).length}/{STICKERS.length}</b> stickers</span><span className="go">Open sticker book →</span>
+    <Link href="/stickers" className="streak glass" aria-label="Open your sticker book">
+      <span className="chipx"><i className="flame">🔥</i><b>{streak}</b> day streak</span>
+      <span className="chipx"><i>⭐</i><b>{st}</b> stars</span>
+      <span className="chipx"><i>🎟️</i><b>{got}/{STICKERS.length}</b> stickers</span>
+      {next && <span className="nextup">Next: {next.e} {next.n}<em>{next.k === 's' ? `${Math.max(0, next.v - st)} ⭐ to go` : `${next.v}-day streak`}</em></span>}
+      <span className="cta cta-sm">🎟️ Open sticker book <i>→</i></span>
     </Link>
   );
 }

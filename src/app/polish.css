@@ -51,3 +51,46 @@
 /* Unlock popup: bright card instead of gray (the dark overlay was showing through the glass) */
 .ul-card{background:linear-gradient(160deg,#ffffff,#f3e8ff)!important;color:#1b1f3b}
 @media(prefers-color-scheme:dark){.ul-card{background:linear-gradient(160deg,#2f2470,#1b1546)!important;color:#f3f4ff}}
+/* ===== Top navigation bar ===== */
+.home-wrap{overflow:clip}.home-wrap .home{padding-top:24px}
+body:has(.nav) .snd.glass{display:none}
+.nav{position:sticky;top:10px;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:1000px;margin:10px auto 0;padding:8px 12px 8px 18px;border-radius:99px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.4rem}.bemoji{font-size:1.7rem}
+.bname{background:linear-gradient(90deg,#7c3aed,#ef4444,#0ea5e9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav-r{display:flex;align-items:center;gap:8px}
+.nav-btn{width:42px;height:42px;border-radius:50%;border:1px solid rgba(124,58,237,.3);background:linear-gradient(160deg,var(--gl1),var(--gl2));font-size:19px;display:grid;place-items:center;cursor:pointer;transition:transform .2s cubic-bezier(.3,1.7,.5,1)}
+.nav-btn:hover{transform:translateY(-2px) scale(1.08)}.nav-btn:active{transform:scale(.92)}
+.me{display:flex;align-items:center;gap:6px;border:0;background:none;padding:0;cursor:pointer;transition:transform .2s}.me:hover{transform:scale(1.05)}
+.ring{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#7c3aed var(--p),rgba(124,58,237,.2) 0)}
+.av{width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:22px}
+.lv{background:#7c3aed;color:#fff;font-weight:700;font-size:.8rem;border-radius:99px;padding:3px 10px}
+.nav-parents{display:inline-flex;gap:6px;align-items:center;padding:9px 16px;border-radius:99px;font-weight:700;color:#78350f;background:linear-gradient(160deg,#fde68a,#fbbf24);box-shadow:inset 0 2px 2px rgba(255,255,255,.7),0 4px 0 #d97706;transition:transform .2s cubic-bezier(.3,1.7,.5,1)}
+.nav-parents:hover{transform:translateY(-2px)}.nav-parents:active{transform:translateY(3px);box-shadow:inset 0 2px 2px rgba(255,255,255,.7),0 1px 0 #d97706}
+.pop{position:absolute;top:calc(100% + 10px);right:12px;width:min(92vw,360px);padding:14px;border-radius:24px;animation:popIn .3s cubic-bezier(.3,1.6,.5,1)}
+.pop input{width:100%;padding:12px 14px;border-radius:14px;border:2px solid rgba(124,58,237,.3);font:inherit;background:#fff;color:#1b1f3b;margin-bottom:6px}
+.sr{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px}.sr:hover{background:var(--chip)}.sr span{font-size:26px}.sr em{margin-left:auto;font-style:normal;color:var(--muted);font-size:.85rem}
+@media(max-width:560px){.nav{padding-left:12px}.nav-parents span,.lv{display:none}.nav-parents{padding:9px 12px}.bname{font-size:1.15rem}}
+/* ===== Primary "Play Now" button on cards ===== */
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding:13px 18px;border-radius:99px;font-weight:700;font-size:1.1rem;color:#fff;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--c) 100%,#fff 10%),color-mix(in srgb,var(--c) 72%,#000));text-shadow:0 1px 2px rgba(0,0,0,.35);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.55),0 6px 0 color-mix(in srgb,var(--c) 55%,#000),0 14px 22px color-mix(in srgb,var(--c) 32%,transparent);
+  transition:transform .2s cubic-bezier(.3,1.7,.5,1),box-shadow .2s}
+.cta i{font-style:normal;display:inline-block;transition:transform .25s}
+.tile:hover .cta,.cta:hover{transform:translateY(-3px)}.tile:hover .cta i,.cta:hover i{transform:translateX(5px)}
+.tile:active .cta,.cta:active{transform:translateY(5px);box-shadow:inset 0 2px 3px rgba(255,255,255,.55),0 1px 0 color-mix(in srgb,var(--c) 55%,#000)}
+.tile:focus-visible,.cta:focus-visible,.streak:focus-visible{outline:4px solid color-mix(in srgb,var(--c,#7c3aed) 55%,transparent);outline-offset:3px}
+.cta-sm{display:inline-flex;margin:0;padding:9px 16px;font-size:.95rem;--c:#7c3aed}
+/* ===== Interactive stats banner ===== */
+@keyframes flame{0%,100%{transform:scale(1) rotate(-4deg)}50%{transform:scale(1.2) rotate(4deg)}}
+.streak{gap:10px 14px}
+.chipx{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:99px;background:var(--chip);transition:transform .2s cubic-bezier(.3,1.7,.5,1)}
+.chipx i{font-style:normal;display:inline-block}.flame{animation:flame 1.6s ease-in-out infinite}
+.streak:hover .chipx{transform:translateY(-3px)}.streak:hover .chipx:nth-child(2){transition-delay:.05s}.streak:hover .chipx:nth-child(3){transition-delay:.1s}
+.nextup{display:flex;flex-direction:column;line-height:1.15;font-size:.92rem;font-weight:600}.nextup em{font-style:normal;color:var(--muted);font-weight:500;font-size:.8rem}
+@media(max-width:520px){.streak .cta-sm,.streak .nextup{grid-column:1/-1;justify-content:center;text-align:center;align-items:center}}
+/* ===== Parent corner ===== */
+.pstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px}
+.pstat{padding:16px;border-radius:20px;text-align:center;color:var(--muted)}.pstat b{display:block;font-size:1.7rem;color:var(--ink)}
+.prow{padding:12px 16px;border-radius:18px;margin-top:10px}.ptop{display:flex;justify-content:space-between;margin-bottom:8px}.ptop span{color:var(--muted)}
+.note{margin:14px 4px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
