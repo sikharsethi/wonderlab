@@ -36,7 +36,7 @@ export function StickerBook() {
             <div className="muted">{next.k === 's' ? `${next.v - st} more stars to go!` : `Play ${next.v} days in a row (your best: ${bs})`}</div></div></div>
         : <div className="hello glass"><span className="avatar">🦉</span><b>You collected every sticker! 🎉</b></div>}
       <div className="stk">{STICKERS.map(x => { const u = ok(x); return (
-        <div key={x.n} className={`sticker glass ${u ? '' : 'lock'}`}><span className="e">{u ? x.e : '🔒'}</span><b>{u ? x.n : '???'}</b>
+        <div key={x.n} className={`sticker glass ${u ? '' : 'lock'}`} onClick={() => u && window.dispatchEvent(new CustomEvent('wl-celebrate', { detail: x.n }))}><span className="e">{u ? x.e : '🔒'}</span><b>{u ? x.n : '???'}</b>
           <small>{x.k === 's' ? `${x.v} ⭐` : `${x.v}-day streak`}</small></div>); })}</div>
     </div>
   );

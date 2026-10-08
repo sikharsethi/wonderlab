@@ -11,7 +11,7 @@ const give = (n: number) => { for (let i = 0; i < n; i++) useStore.getState().aw
 const COL = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#0ea5e9', '#8b5cf6', '#ec4899'];
 const short = (n: string) => n.split(' (')[0];
 
-function Confetti() {
+export function Confetti() {
   const bits = useMemo(() => Array.from({ length: 44 }, () => ({ l: Math.random() * 100, d: Math.random(), c: COL[Math.floor(Math.random() * 7)] })), []);
   return <div className="cf">{bits.map((b, i) => <i key={i} style={{ left: `${b.l}%`, background: b.c, animationDelay: `${b.d}s` }} />)}</div>;
 }
