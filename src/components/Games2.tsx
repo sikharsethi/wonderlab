@@ -38,7 +38,7 @@ export function TrueFalse({ s, exit }: GP) {
 export function Sort({ s, exit }: GP) {
   const set = SORTS[s.id]; const [seed, setSeed] = useState(0);
   const items = useMemo(() => sh([...fresh(`${s.id}:sort:a`, set.a.items, t => t, 3).map(t => ({ t, b: 'a' })), ...fresh(`${s.id}:sort:b`, set.b.items, t => t, 3).map(t => ({ t, b: 'b' }))]), [set, seed]);
-  const [done, setDone] = useState<number[]>([]); const [miss, setMiss] = useState(0); const [bad, setBad] = useState(-1); const [missed, setMissed] = useState<Rv[]>([]);
+  const [done, setDone] = useState<number[]>([]); const [miss, setMiss] = useState(0); const [bad, setBad] = useState(-1); const [sel, setSel] = useState<number | null>(null); const [missed, setMissed] = useState<Rv[]>([]);
   const [d, setD] = useState<{ i: number; sx: number; sy: number; x: number; y: number } | null>(null);
   const drop = (i: number, b?: string) => {
     if (!b) return;
@@ -48,19 +48,19 @@ export function Sort({ s, exit }: GP) {
     again={() => { setSeed(x => x + 1); setDone([]); setMiss(0); setMissed([]); }} exit={exit} />;
   return (
     <Shell title="🧺 Sort It!" chips={[`Sorted ${done.length}/${items.length}`, `Oops ${miss}`]} exit={exit}>
-      <p className="hint">Drag each item into the right basket!</p>
+      <p className="hint">Drag each item into the right basket, or tap an item and then a basket!</p>
       <div className="baskets">{(['a', 'b'] as const).map(k => (
-        <div key={k} data-b={k} className="basket"><span className="big">{set[k].e}</span><b>{set[k].name}</b>
+        <div key={k} data-b={k} className={`basket ${sel !== null ? 'ready' : ''}`} onClick={() => { if (sel !== null) { drop(sel, k); setSel(null); } }}><span className="big">{set[k].e}</span><b>{set[k].name}</b>
           <div className="placed">{items.map((it, i) => (done.includes(i) && it.b === k ? <span key={i} className="chip2">{it.t}</span> : null))}</div></div>))}</div>
       <div className="pool">{items.map((it, i) => done.includes(i) ? null : (
-        <button key={i} className={`dg ${bad === i ? 'shake' : ''}`}
+        <button key={i} className={`dg ${bad === i ? 'shake' : ''} ${sel === i ? 'sel' : ''}`}
           style={d?.i === i ? { transform: `translate(${d.x - d.sx}px,${d.y - d.sy}px) scale(1.1)`, zIndex: 10 } : undefined}
           onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); sfx.tap(); setD({ i, sx: e.clientX, sy: e.clientY, x: e.clientX, y: e.clientY }); }}
           onPointerMove={e => { if (d && d.i === i) setD({ ...d, x: e.clientX, y: e.clientY }); }}
           onPointerCancel={() => setD(null)}
           onPointerUp={e => {
             const hit = document.elementsFromPoint(e.clientX, e.clientY).find(el => (el as HTMLElement).dataset?.b) as HTMLElement | undefined;
-            setD(null); drop(i, hit?.dataset.b);
+            const moved = d ? Math.abs(e.clientX - d.sx) + Math.abs(e.clientY - d.sy) : 99; setD(null); if (moved < 8) setSel(c => (c === i ? null : i)); else drop(i, hit?.dataset.b);
           }}>{it.t}</button>))}</div>
     </Shell>
   );

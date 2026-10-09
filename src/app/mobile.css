@@ -1,0 +1,42 @@
+/* ===== Touch, phone and tablet pass ===== */
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:clip;-webkit-tap-highlight-color:transparent}
+button,a,[role="button"]{touch-action:manipulation}               /* no double-tap zoom delay */
+.gp button,.fcard,.nav button{-webkit-user-select:none;user-select:none}
+.dg{-webkit-touch-callout:none}
+button:focus-visible,a:focus-visible{outline:3px solid #7c3aed;outline-offset:2px}
+/* safe areas (notches, home bar, landscape) */
+.nav{top:calc(10px + env(safe-area-inset-top))}
+.pg{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));padding-bottom:calc(48px + env(safe-area-inset-bottom))}
+/* comfortable touch targets (44px) */
+.nav-btn{width:44px;height:44px}.back{min-width:44px;min-height:44px}.seg button,.lvls button{min-height:44px}
+.ul-card{max-height:calc(100dvh - 24px);overflow:auto}
+/* Sort It: tap an item, then tap a basket (alternative to dragging) */
+.dg.sel{outline:4px solid #fff;box-shadow:0 0 0 7px color-mix(in srgb,var(--c) 45%,transparent)}
+.basket.ready{border-style:solid;box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 28%,transparent);cursor:pointer}
+/* touch screens: no "stuck" hover states after a tap */
+@media(hover:none){
+  :is(.btn,.gcard,.lt,.tfb button,.opts button,.back,.snd,.lvls button):hover{transform:none;filter:none}
+  .opts.big button:not(:disabled):hover,.tile:hover,.fcard:hover,.sticker:not(.lock):hover,.streak:hover,.nav-parents:hover,.nav-btn:hover,.nav-stats:hover,.me:hover,.chipx:hover,.streak:hover .chipx,.tile:hover .cta,.cta:hover{transform:none}
+  .tile:hover .cta i,.cta:hover i{transform:none}
+}
+/* tablets and phones: lighter effects so older devices stay smooth */
+@media(max-width:768px){
+  :is(.btn,.gcard,.lt,.dg,.bl,.mc,.tfb button,button.primary,.pill,.lvls button,.back,.snd,.opts button){backdrop-filter:none;-webkit-backdrop-filter:none}
+  .glass{backdrop-filter:blur(8px) saturate(1.3);-webkit-backdrop-filter:blur(8px) saturate(1.3)}
+}
+/* phones */
+@media(max-width:560px){
+  .menu .gcard{flex:1 1 calc(50% - 7px);min-width:0;min-height:150px;padding:14px}.gcard span{font-size:34px}.gcard b{font-size:1.05rem}.gcard small{font-size:.8rem}
+  .mg{grid-template-columns:repeat(3,1fr);gap:8px}.mc{font-size:14px;overflow-wrap:anywhere;hyphens:auto}.mc.em{font-size:42px}
+  .lt,.slot{width:40px;height:50px;font-size:1.3rem}.tiles{gap:6px}
+  .basket{min-height:130px;padding:8px}.tfb button{padding:20px 8px}
+  .gp{padding:14px}.ghead{gap:6px}
+  .tile{padding:18px}.emo{font-size:48px}
+  .pstats .pstat:last-child:nth-child(odd){grid-column:1/-1}
+}
+@media(max-width:480px){.bname{display:none}.brand{gap:0}}   /* logo emoji only on the smallest screens */
+/* phone held sideways */
+@media(orientation:landscape) and (max-height:520px){
+  .nav{margin-top:4px}.qart{font-size:64px}.gp.wide{padding:12px}.ul-stage{height:100px}.ul-emoji{font-size:70px}.qcard{padding:12px}
+}
