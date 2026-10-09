@@ -34,6 +34,7 @@ export default function NavBar() {
     <header className="nav glass" ref={ref}>
       <Link href="/" className="brand"><span className="bemoji">🌈</span><span className="bname">WonderLab</span></Link>
       <nav className="nav-r" aria-label="Main">
+        <Link href="/stickers" className="nav-stats" aria-label="Streak and stars"><span>🔥 {m ? streak : 0}</span><span>⭐ {m ? stars : 0}</span></Link>
         <SoundToggle inline />
         <button className="nav-btn" aria-label="Search" aria-expanded={panel === 'search'} onClick={() => setPanel(panel === 'search' ? null : 'search')}>🔍</button>
         <button className="me" aria-label={`Profile, level ${L.level}`} aria-expanded={panel === 'me'} onClick={() => setPanel(panel === 'me' ? null : 'me')} style={{ '--p': `${L.pct}%` } as CSSProperties}>

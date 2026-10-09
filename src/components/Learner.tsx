@@ -8,6 +8,8 @@ import { TrueFalse, Sort } from './Games2';
 import { SORTS } from '@/content/sorts';
 import { sfx } from '@/lib/sound';
 import { pool } from '@/lib/fresh';
+import Deco from './Deco';
+import { PlayCtx } from '@/lib/play';
 
 const GAMES = {
   match: { n: 'Memory Match', e: '🃏', d: 'Flip cards and find the pairs' },
@@ -22,7 +24,7 @@ const COLORS: Record<K, string> = { match: '#f97316', scramble: '#0ea5e9', rush:
 const RUN = { match: Memory, scramble: Scramble, rush: Rush, blast: Blast, tf: TrueFalse, sort: Sort };
 
 export default function Learner({ s }: { s: Subject }) {
-  const { found, stars, discover, streak, checkin } = useStore();
+  const { found, discover, checkin } = useStore();
   const [ready, setReady] = useState(false); useEffect(() => { checkin(); setReady(true); }, [checkin]);
   const [lv, setLv] = useState(1); const [g, setG] = useState<K | null>(null); const [open, setOpen] = useState<string | null>(null);
   const list: K[] = ['match', 'scramble', 'rush', 'tf', ...(SORTS[s.id] ? (['sort'] as K[]) : []), ...(s.id === 'math' ? (['blast'] as K[]) : [])];
@@ -33,8 +35,9 @@ export default function Learner({ s }: { s: Subject }) {
 
   return (
     <div className="pg" style={{ '--c': s.color } as CSSProperties}>
-      <header className="pgtop glass"><Link href="/" className="back" aria-label="Home">←</Link><b>{s.emoji} {s.name}</b><Link href="/stickers" className="pill"><span>🔥 {ready ? streak : 0}</span><span>⭐ {ready ? stars : 0}</span></Link></header>
-      {Game ? <Game s={view} exit={() => setG(null)} /> : (
+      <Deco />
+      <header className="pgtop glass"><Link href="/" className="back" aria-label="Home">←</Link><b>{s.emoji} {s.name}</b><span style={{ width: 38 }} /></header>
+      {Game ? <PlayCtx.Provider value={{ sid: s.id, sname: s.name, semoji: s.emoji, game: GAMES[g as K].n }}><Game s={view} exit={() => setG(null)} /></PlayCtx.Provider> : (
         <>
           <div className="hello glass"><span className="avatar">🦉</span>
             <div><b>Hi, explorer!</b><div className="muted">Play a game, or tap a card below to discover facts. Every game earns stars!</div></div></div>
@@ -48,7 +51,7 @@ export default function Learner({ s }: { s: Subject }) {
             <div key={f.id} role="button" tabIndex={0} className={`fcard glass ${ready && found.includes(f.id) ? 'done' : ''}`}
               onClick={() => { setOpen(open === f.id ? null : f.id); if (found.includes(f.id)) sfx.tap(); else sfx.sparkle(); discover(f.id); }}>
               <div className="e">{f.emoji}</div><b>{f.name}</b>
-              {open === f.id && <><p>{f.text}</p><button className="btn ghost" onClick={e => { e.stopPropagation(); speak(f.text); }}>🔊 Read</button></>}
+              {open === f.id && <><p>{f.text}</p><button className="btn read" onClick={e => { e.stopPropagation(); speak(f.text); }}>🔊 Read aloud</button></>}
             </div>))}</div>
         </>
       )}

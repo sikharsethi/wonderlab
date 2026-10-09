@@ -3,7 +3,7 @@ type W = typeof window & { webkitAudioContext?: typeof AudioContext };
 let ctx: AudioContext | null = null;
 
 export const isMuted = () => { try { return typeof window !== 'undefined' && localStorage.getItem('wl-mute') === '1'; } catch { return false; } };
-export const setMuted = (m: boolean) => { try { localStorage.setItem('wl-mute', m ? '1' : '0'); } catch { /* ignore */ } };
+export const setMuted = (m: boolean) => { try { localStorage.setItem('wl-mute', m ? '1' : '0'); } catch { /* ignore */ } if (typeof window !== 'undefined') window.dispatchEvent(new Event('wl-sound')); };
 
 const ac = () => {
   if (typeof window === 'undefined' || isMuted()) return null;

@@ -1,8 +1,10 @@
 'use client';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useStore } from '@/store/useStore';
 import { sfx } from '@/lib/sound';
 import { fresh, see, unsee } from '@/lib/fresh';
+import { buildQuestions, reviewFor } from '@/content/questions';
+import { PlayCtx } from '@/lib/play';
 import type { Subject } from '@/content/types';
 
 type GP = { s: Subject; exit: () => void };
@@ -32,8 +34,9 @@ function Review({ items }: { items: Rv[] }) {
 }
 export function Result({ e, t, p, stars, again, exit, review = [] }: { e: string; t: string; p: string; stars: number; again: () => void; exit: () => void; review?: Rv[] }) {
   const once = useRef(false);
+  const meta = useContext(PlayCtx);
   const cheer = !review.length && stars >= 3 ? '🌟 Perfect round!' : stars >= 4 ? '🎉 Great job!' : stars === 3 ? '👏 Nice work!' : '💪 Good try! Practice makes perfect.';
-  useEffect(() => { if (!once.current) { once.current = true; give(stars); sfx.win(); } }, [stars]);
+  useEffect(() => { if (!once.current) { once.current = true; give(stars); sfx.win(); if (meta) useStore.getState().logPlay({ ...meta, stars, miss: review.reduce((a, x) => a + (x.n || 1), 0), at: Date.now() }); } }, [stars]);
   return (
     <div className="gp glass res"><Confetti />
       <div className="big">{e}</div><h2>{t}</h2><p className="cheer">{cheer}</p><p>{p}</p><p className="earn">+{stars} ⭐</p>
@@ -42,9 +45,9 @@ export function Result({ e, t, p, stars, again, exit, review = [] }: { e: string
     </div>
   );
 }
-export function Shell({ title, chips, exit, children }: { title: string; chips: string[]; exit: () => void; children: ReactNode }) {
+export function Shell({ title, chips, exit, children, cls = '' }: { title: string; chips: string[]; exit: () => void; children: ReactNode; cls?: string }) {
   return (
-    <div className="gp glass">
+    <div className={`gp glass ${cls}`}>
       <div className="ghead"><button className="btn ghost" onClick={exit}>← Games</button><b>{title}</b>
         <span className="stats">{chips.map((c, i) => <span key={i} className="stat">{c}</span>)}</span></div>
       {children}
@@ -109,30 +112,30 @@ export function Scramble({ s, exit }: GP) {
 /* 🚀 Quiz Rush: 3 lives, build a streak */
 export function Rush({ s, exit }: GP) {
   const [seed, setSeed] = useState(0);
-  const qs = useMemo(() => {
-    const gen = s.facts.map(f => ({ q: `Who am I? ${f.text}`, a: f.name, options: sh([f.name, ...sh(s.facts.filter(x => x.id !== f.id)).slice(0, 2).map(x => x.name)]) }));
-    const base = s.quiz.map(q => ({ q: q.q, a: q.options[q.answer], options: q.options }));
-    const pic = s.facts.map(f => ({ q: `Which one is the ${short(f.name)}?`, a: f.emoji, options: sh([f.emoji, ...sh(s.facts.filter(x => x.id !== f.id)).slice(0, 2).map(x => x.emoji)]) }));
-    return fresh(`${s.id}:rush`, [...base, ...gen, ...pic], x => x.q, 8);
-  }, [s, seed]);
-  const [i, setI] = useState(0); const [lives, setLives] = useState(3); const [streak, setStreak] = useState(0); const [score, setScore] = useState(0); const [pick, setPick] = useState<string | null>(null); const [missed, setMissed] = useState<Rv[]>([]);
+  const qs = useMemo(() => fresh(`${s.id}:rush`, buildQuestions(s), x => x.id, 8), [s, seed]);
+  const [i, setI] = useState(0); const [lives, setLives] = useState(3); const [streak, setStreak] = useState(0); const [score, setScore] = useState(0);
+  const [pick, setPick] = useState<string | null>(null); const [missed, setMissed] = useState<Rv[]>([]);
   const q = qs[i];
-  const rv = (x: { q: string; a: string }): Rv => {
-    const f = s.facts.find(y => x.q === `Who am I? ${y.text}` || x.q === `Which one is the ${short(y.name)}?`);
-    return f ? { e: f.emoji, t: short(f.name), p: f.text } : { e: '❓', t: x.q, p: `Answer: ${x.a}` };
-  };
   const answer = (o: string) => {
-    if (pick) return; setPick(o); see([`${s.id}:rush:${q.q}`]);
-    if (o === q.a) { sfx.ok(); setStreak(x => x + 1); setScore(x => x + 1 + (streak >= 2 ? 1 : 0)); } else { sfx.no(); unsee([`${s.id}:rush:${q.q}`]); setMissed(m => bump(m, rv(q))); setLives(l => l - 1); setStreak(0); }
+    if (pick) return; setPick(o); see([`${s.id}:rush:${q.id}`]);
+    if (o === q.answer) { sfx.ok(); setStreak(x => x + 1); setScore(x => x + 1 + (streak >= 2 ? 1 : 0)); }
+    else { sfx.no(); unsee([`${s.id}:rush:${q.id}`]); setMissed(m => bump(m, reviewFor(s, q))); setLives(l => l - 1); setStreak(0); }
     setTimeout(() => { setPick(null); setI(x => x + 1); }, 900);
   };
   if (!q || lives <= 0) return <Result e={lives > 0 ? '🚀' : '💪'} t={lives > 0 ? 'Quiz complete!' : 'Good try!'} p={`Score: ${score}`} stars={Math.min(5, Math.max(1, Math.ceil(score / 2)))} review={missed}
     again={() => { setSeed(x => x + 1); setI(0); setLives(3); setStreak(0); setScore(0); setMissed([]); }} exit={exit} />;
   return (
-    <Shell title="🚀 Quiz Rush" chips={['❤️'.repeat(lives), `🔥 ${streak}`, `⭐ ${score}`]} exit={exit}>
+    <Shell title="🚀 Quiz Rush" chips={['❤️'.repeat(lives), `🔥 ${streak}`, `⭐ ${score}`]} exit={exit} cls="wide">
       <div className="bar"><i style={{ width: `${(i / qs.length) * 100}%` }} /></div>
-      <h3 className="q">{q.q}</h3>
-      <div className="opts">{q.options.map(o => <button key={o} disabled={!!pick} className={pick ? (o === q.a ? 'ok' : o === pick ? 'no' : '') : ''} onClick={() => answer(o)}>{o}</button>)}</div>
+      <p className="qcount">Question {i + 1} of {qs.length}</p>
+      <div className="qcard" key={q.id}>
+        {q.art && <div className="qart">{q.art}</div>}
+        <h3 className="q">{q.prompt}</h3>
+      </div>
+      <div className="opts big">{q.options.map((o, n) => (
+        <button key={o} disabled={!!pick} className={pick ? (o === q.answer ? 'ok' : o === pick ? 'no' : '') : ''} onClick={() => answer(o)}>
+          <span className="ltr">{'ABCDE'[n]}</span><span className="olabel">{o}</span>
+        </button>))}</div>
       {streak >= 3 && <p className="hint">🔥 Streak bonus! Double points!</p>}
     </Shell>
   );

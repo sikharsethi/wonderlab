@@ -94,3 +94,58 @@ body:has(.nav) .snd.glass{display:none}
 .prow{padding:12px 16px;border-radius:18px;margin-top:10px}.ptop{display:flex;justify-content:space-between;margin-bottom:8px}.ptop span{color:var(--muted)}
 .note{margin:14px 4px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* ===== Floating decorations ===== */
+@keyframes drift{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-22px) rotate(12deg)}}
+.deco{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.deco span,.deco i{position:absolute;opacity:.55;animation:drift 9s ease-in-out infinite}
+.bub{border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.95),color-mix(in srgb,var(--c,#7c3aed) 28%,transparent));border:1px solid rgba(255,255,255,.75)}
+/* ===== Quiz Rush: big card + animated answers ===== */
+@keyframes flash{0%{transform:scale(1)}30%{transform:scale(1.06);box-shadow:0 0 0 8px rgba(34,197,94,.35)}100%{transform:scale(1)}}
+.gp.wide{max-width:780px;margin:10px auto 0;padding:clamp(18px,4vw,36px)}
+.qcount{text-align:center;color:var(--muted);margin:8px 0 0;font-weight:600}
+.qcard{text-align:center;padding:22px 16px;margin:12px 0 18px;border-radius:24px;background:linear-gradient(160deg,var(--chip),transparent);animation:popIn .4s cubic-bezier(.3,1.6,.5,1)}
+.qart{font-size:clamp(72px,18vw,120px);line-height:1;margin-bottom:6px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.2));animation:bob 3s ease-in-out infinite}
+.qcard .q{font-size:clamp(1.3rem,4.2vw,2rem);margin:0}
+.opts.big{gap:12px}
+@media(min-width:700px){.opts.big{grid-template-columns:1fr 1fr}.opts.big button:nth-child(odd):last-child{grid-column:1/-1}}
+.opts.big button{display:flex;align-items:center;gap:14px;min-height:64px;padding:12px 18px;font-size:clamp(1.05rem,3.4vw,1.35rem);font-weight:600;text-align:left}
+.ltr{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--c);color:#fff;font-weight:700;box-shadow:inset 0 2px 2px rgba(255,255,255,.5)}
+.opts.big button:not(:disabled):hover{transform:scale(1.03)}
+.opts.big button:disabled:not(.ok):not(.no){opacity:.55}
+.opts.big .ok{animation:flash .7s ease}.opts.big .no{animation:shake .45s}
+/* ===== Subject hub: even game cards + stronger Discover cards ===== */
+.menu .gcard{min-height:176px;justify-content:space-between;gap:6px}
+.fgrid{align-items:start}
+.fcard.glass:not(.done){border:2px solid color-mix(in srgb,var(--c) 42%,transparent)}
+.fcard b{font-size:1.05rem}.fcard p{color:var(--ink);opacity:.85;font-size:.95rem;line-height:1.4}
+.btn.read{margin-top:4px;padding:10px 18px}
+@media(max-width:600px){.fgrid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:6px 2px 12px}.fcard{flex:0 0 72%;scroll-snap-align:start}}
+/* ===== Nav stats + lesson sub-header ===== */
+.nav-stats{display:inline-flex;gap:10px;padding:7px 14px;border-radius:99px;background:var(--chip);font-weight:700;transition:transform .2s cubic-bezier(.3,1.7,.5,1)}.nav-stats:hover{transform:translateY(-2px)}
+@media(max-width:560px){.nav-stats{padding:6px 9px;gap:6px;font-size:.9rem}.nav-r{gap:5px}}
+.pgtop{position:static}
+/* ===== Parent area ===== */
+.gate{display:grid;gap:12px;justify-items:center}.gq{font-size:2.1rem;font-weight:700}
+.gate input,.confirm input{width:100%;max-width:240px;padding:12px;border-radius:14px;border:2px solid rgba(124,58,237,.35);font:inherit;font-size:1.2rem;text-align:center;background:#fff;color:#1b1f3b}
+.err{color:#dc2626;font-weight:600;margin:0}
+.pstat small{display:block}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.two .card2{margin-top:14px}
+.card2{padding:18px;border-radius:24px;margin-top:14px}.card2 h3{margin:0 0 10px}
+.week{display:flex;align-items:flex-end;gap:8px;height:120px}
+.wbar{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;font-size:.75rem;color:var(--muted)}
+.wbar i{display:block;width:100%;max-width:34px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#fbbf24,#d97706);transition:height .7s cubic-bezier(.3,1.2,.4,1)}
+.box{padding:12px 14px;border-radius:16px;margin-top:8px;background:var(--chip)}.box small{display:block;color:var(--muted)}.box b{font-size:1.1rem}
+.box.good{background:color-mix(in srgb,#22c55e 18%,transparent)}.box.warn{background:color-mix(in srgb,#f59e0b 22%,transparent)}
+.tl{list-style:none;margin:0;padding:0}.tl li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.tl li:last-child{border:0}
+.te{font-size:30px}.tl div{flex:1}.tl small{display:block;color:var(--muted)}.tstar{font-weight:700}
+.prow .bar{height:12px}.prow .bar i{transition:width .8s cubic-bezier(.3,1.2,.4,1)}.pct{font-weight:700;color:var(--c)}
+.sw-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}.sw-row:last-child{border:0}
+.sw-row b{display:block}
+.sw{flex:none;width:56px;height:32px;border-radius:99px;border:0;padding:3px;background:rgba(120,120,150,.4);cursor:pointer;transition:background .25s}
+.sw::after{content:"";display:block;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.sw[aria-checked="true"]{background:#22c55e}.sw[aria-checked="true"]::after{transform:translateX(24px)}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.seg button{border:1px solid color-mix(in srgb,var(--c) 35%,transparent);border-radius:99px;padding:6px 14px;background:var(--chip);color:var(--ink);font-weight:600;cursor:pointer}
+.seg button.on{background:var(--c);color:#fff;border-color:var(--c)}
+.confirm{margin-top:8px}.confirm .actions{margin-top:10px}
+.btn.danger{background:linear-gradient(160deg,#fca5a5,#dc2626)!important;color:#fff!important}.btn:disabled{opacity:.5;cursor:not-allowed}
