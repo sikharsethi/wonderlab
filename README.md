@@ -5,9 +5,9 @@
 
 **Learning games for kids aged 5–12.** Play, discover facts and earn stickers across science, math, geography, history, biology and space.
 
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=nextdotjs)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14-000000)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-18-087ea4)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
 
 [**Live demo**](wonderlab-tawny.vercel.app) · [Report a bug](https://github.com/sikharsethi/wonderlab/issues) · [Request a feature](https://github.com/sikharsethi/wonderlab/issues)
