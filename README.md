@@ -10,7 +10,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
 
-[**Live demo**](wonderlab-tawny.vercel.app) · [Report a bug](https://github.com/sikharsethi/wonderlab/issues) · [Request a feature](https://github.com/sikharsethi/wonderlab/issues)
+[**Live demo**]https://wonderlab-tawny.vercel.app/ · [Report a bug](https://github.com/sikharsethi/wonderlab/issues) · [Request a feature](https://github.com/sikharsethi/wonderlab/issues)
 
 </div>
 
@@ -217,6 +217,11 @@ Contributions are welcome.
 3. Commit with a clear message and open a pull request describing what changed and why.
 
 For new educational content, please include a source or reference so facts can be verified.
+
+
+## License
+
+Distributed under the MIT License. See LICENSE for details.
 
 
 ---
